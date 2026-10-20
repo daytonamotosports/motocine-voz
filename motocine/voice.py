@@ -28,8 +28,8 @@ from pathlib import Path
 
 from .text import Word, align, estimate_words, tokens
 
-VOICE_VERSION = 'v8'          # subir cuando cambie cómo se arma la voz (invalida la caché)
-DEFAULT_VOICE = {'engine': 'kokoro', 'voice': 'em_alex', 'speed': 1.15, 'rate': '+0%', 'pitch': '+0Hz', 'start': 0.4}
+VOICE_VERSION = 'v9'          # subir cuando cambie cómo se arma la voz (invalida la caché)
+DEFAULT_VOICE = {'engine': 'edge', 'voice': 'es-MX-JorgeNeural', 'speed': 1.15, 'rate': '+0%', 'pitch': '+0Hz', 'start': 0.4}
 
 
 def ffprobe_duration(path: Path) -> float:
@@ -239,7 +239,8 @@ def _edge_directed(toks: list[str], cfg: dict, out: Path, log=print):
     with tempfile.TemporaryDirectory() as td:
         for i, (ch, pl) in enumerate(zip(chunks, plan)):
             mp3 = Path(td) / f'{i}.mp3'
-            c2 = {**cfg, 'rate': f'{base + round((pl["speed_k"] - 1) * 100):+d}%', 'pitch': f'{round(pl["pitch"] * 6):+d}Hz'}
+            c2 = {**cfg, 'rate': f'{base + round((pl["speed_k"] - 1) * 100):+d}%', 'pitch': f'{round(pl["pitch"] * 9):+d}Hz',
+                  'volume': f'{pl.get("volume", 0):+d}%'}
             spoken = asyncio.run(_edge(pronounce(pl['say'], cfg.get('pronounce')) if cfg.get('pronounce') else pl['say'], c2, mp3))
             raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', str(mp3), '-f', 'f32le', '-ac', '1', '-ar', str(sr), '-'],
                                  capture_output=True, check=True).stdout
@@ -261,7 +262,7 @@ def _edge_directed(toks: list[str], cfg: dict, out: Path, log=print):
 async def _edge(text: str, cfg: dict, out: Path) -> list[tuple[str, float, float]]:
     import edge_tts
     voice = cfg['voice'] if 'Neural' in str(cfg.get('voice')) else 'es-CO-GonzaloNeural'   # si la marca usa Kokoro
-    kw = dict(voice=voice, rate=cfg.get('rate', '+0%'), pitch=cfg.get('pitch', '+0Hz'))
+    kw = dict(voice=voice, rate=cfg.get('rate', '+0%'), pitch=cfg.get('pitch', '+0Hz'), volume=cfg.get('volume', '+0%'))
     try:
         com = edge_tts.Communicate(text, boundary='WordBoundary', **kw)
     except TypeError:  # edge-tts < 7 siempre manda WordBoundary
@@ -283,7 +284,7 @@ def synthesize(narration: str, cfg: dict, build: Path, base: Path | None = None,
     engine = cfg['engine']
     vdir = build / 'voice'
     vdir.mkdir(parents=True, exist_ok=True)
-    key_src = json.dumps({k: cfg.get(k) for k in ('engine', 'voice', 'rate', 'pitch', 'file', 'model', 'speed', 'pronounce', 'acento', 'narrador')}, sort_keys=True) + narration + VOICE_VERSION
+    key_src = json.dumps({k: cfg.get(k) for k in ('engine', 'voice', 'rate', 'pitch', 'file', 'model', 'speed', 'pronounce', 'acento', 'narrador', 'timings')}, sort_keys=True) + narration + VOICE_VERSION
     key = hashlib.sha1(key_src.encode()).hexdigest()[:12]
     meta_path = vdir / f'{key}.json'
     if meta_path.exists():
@@ -304,7 +305,16 @@ def synthesize(narration: str, cfg: dict, build: Path, base: Path | None = None,
         try:
             words, dur = _edge_directed(toks, cfg, audio, log)
         except Exception as e:
-            raise RuntimeError(f'No se pudo generar la voz con Edge TTS ({e}). Revisa la conexión.') from e
+            # sin internet a Microsoft (como en la sesión en la nube): se pide la misma voz al repositorio público
+            # motocine-voz (GitHub la genera gratis) y se usa esa grabación con los tiempos de cada palabra
+            if base is None or not (base / 'video.json').exists():
+                raise RuntimeError(f'No se pudo generar la voz con Edge TTS ({e}). Revisa la conexión.') from e
+            from .nube import run
+            name = {'es-MX-JorgeNeural': 'edge-jorge-mx', 'es-CO-GonzaloNeural': 'edge-gonzalo-co'}.get(cfg.get('voice'), 'edge-jorge-mx')
+            log(f'  voz: sin conexión a Edge aquí; la pido a GitHub (motocine-voz, {name})')
+            mp3 = run(base, name, log=log)
+            return synthesize(narration, {'engine': 'file', 'file': str(mp3), 'timings': str(mp3.with_suffix('.json')),
+                                          'start': cfg.get('start')}, build, base, log)
         timing = 'exact'
     elif engine == 'edge':
         audio = vdir / f'{key}.mp3'
@@ -335,8 +345,12 @@ def synthesize(narration: str, cfg: dict, build: Path, base: Path | None = None,
             audio = vdir / f'{key}.wav'
             subprocess.run(['piper', '--model', str(cfg['model']), '--output_file', str(audio)], input=narration.encode(), check=True)
         dur = ffprobe_duration(audio)
-        spoken = whisper_words(audio)
-        if spoken:
+        tm = cfg.get('timings')                       # tiempos ya medidos (p. ej. del laboratorio de voz: <voz>.json)
+        if tm:
+            tp = Path(tm) if not base or Path(tm).is_absolute() else base / tm
+            spoken = [tuple(w) for w in json.loads(tp.read_text(encoding='utf-8'))['words']]
+            words, timing = align(toks, spoken, dur), 'exact'
+        elif spoken := whisper_words(audio):
             words, timing = align(toks, spoken, dur), 'whisper'
         else:
             s, e = speech_bounds(audio)

@@ -7,6 +7,7 @@ Lee el guion frase por frase y le asigna un papel; cada papel tiene su ritmo, su
   intriga     "nadie", "nunca", "secreto", "el tercero", "pero"...: más baja y lenta, con silencio ANTES (suspenso)
   numero      "Uno: ...", "Dos: ...": el número se separa con una pausa corta dentro de la misma frase
               ("Uno… llantas bajas"); dicho solo, la voz lo lee en inglés ("Tres." → "Trash")
+  titular     "Primero, la cadena:" (antes de los dos puntos): se anuncia más pausado y fuerte, respira y explica
   remate      frases cortas que cierran una idea ("Un motor nuevo, muchísimo."): golpe, pausa después
   cta         el cierre (comenta, síguenos): más ágil y arriba, con energía
   normal      el resto, con una variación mínima de tono y ritmo para que no suene a metrónomo
@@ -41,6 +42,8 @@ def role(text: str, i: int, n: int) -> str:
     p = _plain(text)
     if text.rstrip().endswith(',') and i < n - 1:
         return 'tramo'
+    if text.rstrip().endswith(':') and i < n - 1:
+        return 'titular'
     if i == n - 1 and any(w in p for w in CTA):
         return 'cta'
     if i == 0:
@@ -66,7 +69,10 @@ STYLE = {'gancho':   (.95,  .5, 0.00, .55),
          'remate':   (.92, -.3, 0.10, .45),
          'cta':      (1.02, .4, 0.25, .10),
          'normal':   (1.0,  0., 0.00, .30),
-         'tramo':    (1.0,  .1, 0.00, .22)}    # primera mitad de una frase partida antes del suspenso
+         'tramo':    (1.0,  .1, 0.00, .22),    # primera mitad de una frase partida antes del suspenso
+         'titular':  (.92,  .35, 0.15, .30)}   # "Primero, la cadena:" — se anuncia, se respira y luego se explica
+# fuerza de la voz por papel (%): lo que engancha va más fuerte, el suspenso un poco más bajo (como al oído)
+VOLUME = {'gancho': 8, 'titular': 7, 'intriga': -4, 'cta': 6, 'remate': 4}
 
 
 def beats(chunks: list[list[str]]) -> list[list[str]]:
@@ -82,9 +88,12 @@ def beats(chunks: list[list[str]]) -> list[list[str]]:
                 if any(rest.startswith(w) or (' ' + w) in ' ' + rest[:24] for w in INTRIGA):
                     cut = i + 1
         if cut and len(ch) - cut >= 2:
-            out += [ch[:cut], ch[cut:]]
+            parts = [ch[:cut], ch[cut:]]
         else:
-            out.append(ch)
+            parts = [ch]
+        for pt in parts:                             # "Primero, la cadena: | si cuelga mucho…" (el titular se anuncia)
+            k = next((i + 1 for i, w in enumerate(pt[:-2]) if w.endswith(':') and i >= 1), None)
+            out += [pt[:k], pt[k:]] if k else [pt]
     return out
 
 
@@ -98,7 +107,7 @@ def plan(sentences: list[str]) -> list[dict]:
         if r == 'numero':                                   # "Uno: llantas" → "Uno… llantas" (pausa dentro)
             say = NUMERO.sub(lambda m: m.group(1) + '… ', s, count=1)
         j = _jit(s)
-        out.append({'text': s, 'say': say, 'role': r, 'speed_k': round(sp * (1 + .04 * j), 4),
+        out.append({'text': s, 'say': say, 'role': r, 'speed_k': round(sp * (1 + .04 * j), 4), 'volume': VOLUME.get(r, 0),
                     'pitch': round(pt + .3 * _jit(s, 1), 3), 'pause_before': pb, 'pause_after': round(pa + .04 * j, 3)})
     return out
 
