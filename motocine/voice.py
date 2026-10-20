@@ -28,7 +28,7 @@ from pathlib import Path
 
 from .text import Word, align, estimate_words, tokens
 
-VOICE_VERSION = 'v10'          # subir cuando cambie cómo se arma la voz (invalida la caché)
+VOICE_VERSION = 'v11'          # subir cuando cambie cómo se arma la voz (invalida la caché)
 DEFAULT_VOICE = {'engine': 'edge', 'voice': 'es-MX-JorgeNeural', 'speed': 1.15, 'rate': '+0%', 'pitch': '+0Hz', 'start': 0.4}
 
 
@@ -77,7 +77,7 @@ def _kokoro_dir() -> Path:
     return d
 
 
-def _trim(x, sr, with_start: bool = False):
+def _trim(x, sr, with_start: bool = False, pad0: float = .12, pad1: float = .2):
     """Quita el silencio de los extremos SIN comerse los sonidos suaves (la "s" inicial, finales que se apagan):
     envolvente suavizada con umbral bajo, márgenes amplios y fundidos cortos para que no haya clics."""
     import numpy as np
@@ -89,8 +89,8 @@ def _trim(x, sr, with_start: bool = False):
     if not on.any():
         return (x, 0) if with_start else x
     i0, i1 = int(np.argmax(on)), len(x) - int(np.argmax(on[::-1]))
-    a0 = max(0, i0 - int(.12 * sr))
-    y = x[a0:min(len(x), i1 + int(.2 * sr))].copy()
+    a0 = max(0, i0 - int(pad0 * sr))
+    y = x[a0:min(len(x), i1 + int(pad1 * sr))].copy()
     f = min(len(y) // 4, int(.008 * sr))
     if f > 1:
         y[:f] *= np.linspace(0, 1, f); y[-f:] *= np.linspace(1, 0, f)
@@ -244,7 +244,8 @@ def _edge_directed(toks: list[str], cfg: dict, out: Path, log=print):
             spoken = asyncio.run(_edge(pronounce(pl['say'], cfg.get('pronounce')) if cfg.get('pronounce') else pl['say'], c2, mp3))
             raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', str(mp3), '-f', 'f32le', '-ac', '1', '-ar', str(sr), '-'],
                                  capture_output=True, check=True).stdout
-            x, a0 = _trim(np.frombuffer(raw, np.float32).copy(), sr, with_start=True)
+            # Edge llega limpia: márgenes cortos (los de Kokoro dejaban ~0,3 s extra de silencio por frase)
+            x, a0 = _trim(np.frombuffer(raw, np.float32).copy(), sr, with_start=True, pad0=.05, pad1=.09)
             pk = float(cfg.get('pausas', 1))                # "pausas": .8 = silencios 20 % más cortos
             pb = pl['pause_before'] * pk if audio else 0
             if pb:
