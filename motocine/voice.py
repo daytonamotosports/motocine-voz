@@ -28,7 +28,7 @@ from pathlib import Path
 
 from .text import Word, align, estimate_words, tokens
 
-VOICE_VERSION = 'v11'          # subir cuando cambie cómo se arma la voz (invalida la caché)
+VOICE_VERSION = 'v12'          # subir cuando cambie cómo se arma la voz (invalida la caché)
 DEFAULT_VOICE = {'engine': 'edge', 'voice': 'es-MX-JorgeNeural', 'speed': 1.15, 'rate': '+0%', 'pitch': '+0Hz', 'start': 0.4}
 
 
@@ -245,7 +245,7 @@ def _edge_directed(toks: list[str], cfg: dict, out: Path, log=print):
             raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', str(mp3), '-f', 'f32le', '-ac', '1', '-ar', str(sr), '-'],
                                  capture_output=True, check=True).stdout
             # Edge llega limpia: márgenes cortos (los de Kokoro dejaban ~0,3 s extra de silencio por frase)
-            x, a0 = _trim(np.frombuffer(raw, np.float32).copy(), sr, with_start=True, pad0=.05, pad1=.09)
+            x, a0 = _trim(np.frombuffer(raw, np.float32).copy(), sr, with_start=True, pad0=.08, pad1=.09)
             pk = float(cfg.get('pausas', 1))                # "pausas": .8 = silencios 20 % más cortos
             pb = pl['pause_before'] * pk if audio else 0
             if pb:
