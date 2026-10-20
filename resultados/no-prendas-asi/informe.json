@@ -1,12 +1,12 @@
 {
  "edge-jorge-mx": {
-  "segundos_generar": 7.1,
-  "naturalidad_utmos": 3.38,
-  "entiende": 0.985,
-  "duracion": 27.0,
-  "palabras_por_seg": 2.52,
+  "segundos_generar": 4.9,
+  "naturalidad_utmos": 3.33,
+  "entiende": 1.0,
+  "duracion": 27.6,
+  "palabras_por_seg": 2.46,
   "pausas": 10,
   "pausa_media": 0.73,
-  "se_oye": "Para. No prendas tu moto así. Estos tres errores en la mañana desgastan el motor sin que te des cuenta. Primero, acelerarla apenas prende. El aceite todavía no ha llegado a todas las piezas. Segundo, dejar el choque puesto todo el camino. Gasta gasolina y ensucia la bujía. Tercero, salir sin mirar el nivel de aceite. Toma 10 segundos. ¿Cuál de estos haces tú? Escríbenos si te ayudamos."
+  "se_oye": "Para. No prendas tu moto así. Estos tres errores en la mañana desgastan el motor sin que te des cuenta. Primero, acelerarla apenas arranca. El aceite todavía no ha llegado a todas las piezas. Segundo, dejar el choque puesto todo el camino. Gasta gasolina y ensucia la bugilla. Tercero, salir sin mirar el nivel de aceite. Toma 10 segundos. ¿Cuál de estos haces tú? Escríbenos, nosotros te ayudamos."
  }
 }
