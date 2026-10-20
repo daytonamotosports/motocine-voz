@@ -1,0 +1,56 @@
+name: Laboratorio de voz
+
+# Se activa solo al subir un guion nuevo a guiones/ (o a mano). Genera la narración con varias voces, las califica
+# (naturalidad UTMOS 1-5, claridad con Whisper, pausas, ritmo) y guarda audios + informe en resultados/<guion>/.
+# Repositorio público: los minutos de GitHub Actions son gratis.
+on:
+  push:
+    paths: ["guiones/**", "motocine/**", "scripts/**"]
+  workflow_dispatch:
+    inputs:
+      guion:
+        description: "Archivo dentro de guiones/ (ej. gasolina.txt)"
+        required: true
+        default: "gasolina.txt"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: voz-lab
+  cancel-in-progress: false
+
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar programas
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg rubberband-cli
+          pip install -q -r requirements.txt
+          pip install -q torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -q chatterbox-tts || echo "chatterbox no se pudo instalar"
+      - name: Elegir guion
+        id: g
+        run: |
+          G="${{ inputs.guion }}"
+          if [ -z "$G" ]; then G=$(git diff --name-only HEAD~1 -- guiones | head -1 | xargs -r basename); fi
+          [ -z "$G" ] && G=gasolina.txt
+          echo "guion=$G" >> "$GITHUB_OUTPUT"; echo "nombre=${G%.txt}" >> "$GITHUB_OUTPUT"
+      - name: Probar voces
+        run: python scripts/voz_lab.py "guiones/${{ steps.g.outputs.guion }}" "resultados/${{ steps.g.outputs.nombre }}"
+      - name: Guardar resultados
+        run: |
+          git config user.name "motocine-bot"
+          git config user.email "motocine-bot@users.noreply.github.com"
+          git add resultados
+          git commit -m "Resultados de voz: ${{ steps.g.outputs.nombre }} [skip ci]" || exit 0
+          git pull --rebase -q origin "${GITHUB_REF_NAME}" || true
+          git push origin "HEAD:${GITHUB_REF_NAME}"
