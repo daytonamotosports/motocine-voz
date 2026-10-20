@@ -43,6 +43,7 @@ jobs:
           G="${{ inputs.guion }}"
           if [ -z "$G" ]; then G=$(git diff --name-only HEAD~1 -- 'guiones/*.txt' | head -1 | xargs -r basename); fi
           if [ -z "$G" ]; then G=$(git diff --name-only HEAD~1 -- 'guiones/*.voces' | head -1 | xargs -r basename | sed 's/\.voces$/.txt/'); fi
+          if [ -z "$G" ]; then G=$(git diff --name-only HEAD~1 -- 'guiones/*.cfg.json' | head -1 | xargs -r basename | sed 's/\.cfg\.json$/.txt/'); fi
           [ -z "$G" ] && G=gasolina.txt
           echo "guion=$G" >> "$GITHUB_OUTPUT"; echo "nombre=${G%.txt}" >> "$GITHUB_OUTPUT"
       - name: Probar voces
