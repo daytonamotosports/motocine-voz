@@ -1,12 +1,12 @@
 {
  "edge-jorge-mx": {
   "segundos_generar": 3.5,
-  "naturalidad_utmos": 3.59,
+  "naturalidad_utmos": 3.63,
   "entiende": 1.0,
-  "duracion": 31.5,
-  "palabras_por_seg": 2.32,
+  "duracion": 31.6,
+  "palabras_por_seg": 2.34,
   "pausas": 14,
   "pausa_media": 0.63,
-  "se_oye": "¿Sabes que mira un mecánico en los primeros 10 segundos que llegas al taller? No es el motor. Primero, la cadena, si cuelga mucho, ya te está robando fuerza. Segundo, las llantas, si están lisas o gastadas de un lado, ya no frenan igual. Tercero, el humo del escape, si sale azul, está quemando aceite. Y lo último. ¿Cómo suena el motor en mínimo? ¿Tu moto pasaría la prueba? Escríbenos y la revisamos."
+  "se_oye": "¿Sabes que mira un mecánico en los primeros 10 segundos que llegas al taller? No es lo que crees. Primero, la cadena, si cuelga mucho, ya te está robando fuerza. Segundo, las llantas, si están lisas o gastadas de un lado, ya no frenan igual. Tercero, el humo del escape, si sale azul, está quemando aceite. Y lo último. ¿Cómo suena la moto en mínima? ¿Tu moto pasaría la prueba? Escríbenos y la revisamos."
  }
 }
