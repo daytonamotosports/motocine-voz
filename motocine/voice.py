@@ -28,7 +28,7 @@ from pathlib import Path
 
 from .text import Word, align, estimate_words, tokens
 
-VOICE_VERSION = 'v9'          # subir cuando cambie cómo se arma la voz (invalida la caché)
+VOICE_VERSION = 'v10'          # subir cuando cambie cómo se arma la voz (invalida la caché)
 DEFAULT_VOICE = {'engine': 'edge', 'voice': 'es-MX-JorgeNeural', 'speed': 1.15, 'rate': '+0%', 'pitch': '+0Hz', 'start': 0.4}
 
 
@@ -182,7 +182,7 @@ def _kokoro(toks: list[str], cfg: dict, out: Path, log=print):
         if checker is not None:
             report.append({'text': text, 'said': said, 'heard': heard, 'score': round(sc, 3), 'missing': missing,
                            'at': round(pos, 2), 'role': pl['role']})
-        pb = pl['pause_before'] if audio else 0
+        pb = pl['pause_before'] * float(cfg.get('pausas', 1)) if audio else 0
         if pb >= .15 and cfg.get('respiracion', True) is not False:      # respiro audible antes del suspenso
             b = narrador.breath(sr, min(.2, pb), seed=len(audio))
             audio += [np.zeros(int(max(0, pb - len(b) / sr) * sr), np.float32), b]
@@ -191,7 +191,7 @@ def _kokoro(toks: list[str], cfg: dict, out: Path, log=print):
         pos += pb
         dur = len(x) / sr
         words += estimate_words(ch, pos + .1, pos + dur - .12)
-        pause = pl['pause_after']
+        pause = pl['pause_after'] * float(cfg.get('pausas', 1))
         audio += [x, np.zeros(int(pause * sr), np.float32)]
         pos += dur + pause
     pcm = (np.clip(np.concatenate(audio), -1, 1) * 32767).astype(np.int16)
@@ -239,20 +239,21 @@ def _edge_directed(toks: list[str], cfg: dict, out: Path, log=print):
     with tempfile.TemporaryDirectory() as td:
         for i, (ch, pl) in enumerate(zip(chunks, plan)):
             mp3 = Path(td) / f'{i}.mp3'
-            c2 = {**cfg, 'rate': f'{base + round((pl["speed_k"] - 1) * 100):+d}%', 'pitch': f'{round(pl["pitch"] * 9):+d}Hz',
+            c2 = {**cfg, 'rate': f'{base + round((pl["speed_k"] - 1) * 100):+d}%', 'pitch': f'{round(pl["pitch"] * 9 * float(cfg.get("expresion", 1))):+d}Hz',
                   'volume': f'{pl.get("volume", 0):+d}%'}
             spoken = asyncio.run(_edge(pronounce(pl['say'], cfg.get('pronounce')) if cfg.get('pronounce') else pl['say'], c2, mp3))
             raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', str(mp3), '-f', 'f32le', '-ac', '1', '-ar', str(sr), '-'],
                                  capture_output=True, check=True).stdout
             x, a0 = _trim(np.frombuffer(raw, np.float32).copy(), sr, with_start=True)
-            pb = pl['pause_before'] if audio else 0
+            pk = float(cfg.get('pausas', 1))                # "pausas": .8 = silencios 20 % más cortos
+            pb = pl['pause_before'] * pk if audio else 0
             if pb:
                 audio.append(np.zeros(int(pb * sr), np.float32)); pos += pb
             dur = len(x) / sr
             sp = [(w, max(0, a - a0 / sr) + pos, max(0, b - a0 / sr) + pos) for w, a, b in spoken]
             words += align(ch, sp, pos + dur) if sp else estimate_words(ch, pos + .05, pos + dur - .1)
-            audio += [x, np.zeros(int(pl['pause_after'] * sr), np.float32)]
-            pos += dur + pl['pause_after']
+            audio += [x, np.zeros(int(pl['pause_after'] * pk * sr), np.float32)]
+            pos += dur + pl['pause_after'] * pk
     pcm = (np.clip(np.concatenate(audio), -1, 1) * 32767).astype(np.int16)
     with wave.open(str(out), 'wb') as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(sr); w.writeframes(pcm.tobytes())
@@ -284,7 +285,7 @@ def synthesize(narration: str, cfg: dict, build: Path, base: Path | None = None,
     engine = cfg['engine']
     vdir = build / 'voice'
     vdir.mkdir(parents=True, exist_ok=True)
-    key_src = json.dumps({k: cfg.get(k) for k in ('engine', 'voice', 'rate', 'pitch', 'file', 'model', 'speed', 'pronounce', 'acento', 'narrador', 'timings')}, sort_keys=True) + narration + VOICE_VERSION
+    key_src = json.dumps({k: cfg.get(k) for k in ('engine', 'voice', 'rate', 'pitch', 'file', 'model', 'speed', 'pronounce', 'acento', 'narrador', 'timings', 'pausas', 'expresion')}, sort_keys=True) + narration + VOICE_VERSION
     key = hashlib.sha1(key_src.encode()).hexdigest()[:12]
     meta_path = vdir / f'{key}.json'
     if meta_path.exists():

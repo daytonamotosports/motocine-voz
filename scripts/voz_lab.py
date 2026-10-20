@@ -146,6 +146,13 @@ def main(project: str, out_dir: str):
         'edge-gonzalo-co': {'engine': 'edge', 'voice': 'es-CO-GonzaloNeural'},
         'edge-jorge-mx-sin-narrador': {'engine': 'edge', 'voice': 'es-MX-JorgeNeural', 'narrador': False},
     }
+    extra = {}
+    cf = proj.with_suffix('.cfg.json') if proj.suffix == '.txt' else None
+    if cf and cf.exists():                          # velocidad, pausas, expresión... que pide el proyecto
+        extra = json.loads(cf.read_text())
+        for k, v in variants.items():
+            if v['engine'] == 'edge':
+                v.update({kk: vv for kk, vv in extra.items() if kk not in ('voice', 'engine', 'narrador')})
     rep, audio, timings = {}, {}, {}
     pick = [v.strip() for v in os.getenv('VOCES', '').split(',') if v.strip()]   # vacío = todas (laboratorio)
     if pick:
@@ -176,7 +183,7 @@ def main(project: str, out_dir: str):
     for name, x in audio.items():
         save_mp3(x, out / f'{name}.mp3')
         # tiempos de cada palabra (para usar esta voz en un video: subtítulos y boca del mecánico)
-        (out / f'{name}.json').write_text(json.dumps({'narration': narration, 'words': timings.get(name, [])}, ensure_ascii=False))
+        (out / f'{name}.json').write_text(json.dumps({'narration': narration, 'cfg': extra, 'words': timings.get(name, [])}, ensure_ascii=False))
         sc, heard = understood(x, narration)
         words = len(narration.split())
         rep[name].update({'naturalidad_utmos': utmos(x), 'entiende': sc, 'duracion': round(len(x) / SR, 1),
