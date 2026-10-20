@@ -1,12 +1,12 @@
 {
  "edge-jorge-mx": {
-  "segundos_generar": 9.1,
-  "naturalidad_utmos": null,
+  "segundos_generar": 5.6,
+  "naturalidad_utmos": 3.5,
   "entiende": 0.985,
-  "duracion": 29.9,
-  "palabras_por_seg": 2.27,
+  "duracion": 30.4,
+  "palabras_por_seg": 2.24,
   "pausas": 19,
-  "pausa_media": 0.53,
-  "se_oye": "¿Qué suena así en tu moto? Escucha y elige entre 3. A. Frenos cristalizados. B. Rodamiento de rueda. C. Cadena seca. Piénsalo bien. 3. 2. 1. Es la C. De cadena. Mira por dentro. Sin grasa, los eslabones rozan contra el piñón y chillan. Lubrícala y el ruido desaparece. Pero lo peor, se estira Ahí se come el piñón. ¿Le atinaste? Comenta tu letra y escucha otra vez."
+  "pausa_media": 0.55,
+  "se_oye": "¿Qué suena así en tu moto? Escucha y elige entre 3. A. Frenos cristalizados. B. Rodamiento de rueda. C. Cadena seca. Piénsalo bien. 3. 2. 1. Es la C. De cadena. Mira por dentro. Sin grasa, los eslabones rosan contra el piñón y chillan. Lubrícala y el ruido desaparece. Pero lo peor... Se estira y se come el piñón. ¿Le atinaste? Comenta tu letra y escucha otra vez."
  }
 }
