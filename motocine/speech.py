@@ -164,9 +164,12 @@ class Checker:
         self.rec.decode_stream(st)
         return st.result.text.strip()
 
+    # manías del reconocedor al ESCRIBIR una palabra que la voz dice bien (no son errores de pronunciación)
+    SAME = {'bugilla': 'bujia', 'bugia': 'bujia', 'bujilla': 'bujia'}
+
     def score(self, expected: str, heard: str) -> tuple[float, list[str]]:
         """(0..1 parecido, palabras esperadas que no se oyeron)."""
-        a, b = _norm_words(expected), _norm_words(heard)
+        a, b = _norm_words(expected), [self.SAME.get(w, w) for w in _norm_words(heard)]
         if not a:
             return 1.0, []
         sm = difflib.SequenceMatcher(a=a, b=b, autojunk=False)
