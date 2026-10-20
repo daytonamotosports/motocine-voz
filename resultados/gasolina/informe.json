@@ -1,0 +1,62 @@
+{
+ "kokoro-alex": {
+  "segundos_generar": 123.3,
+  "naturalidad_utmos": 1.62,
+  "entiende": 0.975,
+  "duracion": 32.5,
+  "palabras_por_seg": 2.43,
+  "pausas": 11,
+  "pausa_media": 0.64,
+  "se_oye": "Tu moto gasta más gasolina de lo normal. Hay tres culpables y el tercero casi nadie lo revisa. Uno llantas bajas de aire. La moto se arrastra y el motor trabaja de más. Dos el filtro de aire sucio. El motor se ahoga y quema más gasolina. Tres la bugilla gastada. La chispa es débil y parte de la gasolina se desperdicia. Pisa estas tres cosas y ahorras en cada tanqueada. ¿Cuánto te dura un tanque? Coméntalo y síguenos."
+ },
+ "edge-jorge-mx": {
+  "segundos_generar": 10.7,
+  "naturalidad_utmos": 3.48,
+  "entiende": 0.975,
+  "duracion": 34.0,
+  "palabras_por_seg": 2.32,
+  "pausas": 13,
+  "pausa_media": 0.76,
+  "se_oye": "¿Tu moto gasta más gasolina de lo normal? Hay tres culpables. Y el tercero casi nadie lo revisa. 1. Llantas bajas de aire. La moto se arrastra y el motor trabaja de más. 2. El filtro de aire sucio. El motor se ahoga y quema más gasolina. 3. La bugía gastada. La chispa es débil y parte de la gasolina. Vina se desperdicia. Revise estas tres cosas y ahorras en cada tanqueada. ¿Cuánto te dura un tanque? Coméntalo y síguenos."
+ },
+ "edge-gonzalo-co": {
+  "segundos_generar": 11.3,
+  "naturalidad_utmos": 3.52,
+  "entiende": 0.949,
+  "duracion": 30.3,
+  "palabras_por_seg": 2.6,
+  "pausas": 12,
+  "pausa_media": 0.79,
+  "se_oye": "¿Tu moto gasta más gasolina de lo normal? Hay tres culpables. Y el tercero casi nadie lo revisa. Uno, llantas bajas de aire. La moto se arrastra y el motor trabaja de más. Dos, el filtro de aire sucio. El motor se ahoga y quema más gasolina. Tres, la agujía gastada. La chispas débil y parte de la gasolina se desperdicia. Revisas estas tres cosas y y ahorras en cada tanqueada. ¿Cuánto te dura un tanque? Coméntalo y síguenos."
+ },
+ "edge-jorge-mx-sin-narrador": {
+  "segundos_generar": 3.7,
+  "naturalidad_utmos": 3.58,
+  "entiende": 0.975,
+  "duracion": 34.9,
+  "palabras_por_seg": 2.26,
+  "pausas": 14,
+  "pausa_media": 0.77,
+  "se_oye": "Tu moto gasta más gasolina de lo normal. Hay tres culpables y el tercero casi nadie lo revisa. Uno, llantas bajas de aire. La moto se arrastra y el motor trabaja de más. Dos, el filtro de aire sucio. El motor se ahoga y quema más gasolina. Tres, la bugilla gastada. La chispa es débil y parte de la gasolina Nace desperdicia. Revisa estas tres cosas y ahorras en cada tanqueada. ¿Cuánto te dura un tanque? Coméntalo y síguenos."
+ },
+ "chatterbox-emocion-0.5": {
+  "segundos_generar": 509.1,
+  "naturalidad_utmos": 3.25,
+  "entiende": 0.987,
+  "duracion": 46.7,
+  "palabras_por_seg": 1.69,
+  "pausas": 23,
+  "pausa_media": 0.62,
+  "se_oye": "Tu moto gasta más gasolina de lo normal? Hay tres culpables. Y el tercero casi nadie lo revisa. Uno, llantas bajas de aire. La moto se arrastra y el motor trabaja de más. Dos, el filtro de aire sucio. El motor se ahoga y quema más gasolina. 3. La bugilla gastada. La chispa es débil y parte de la gasolina se desperdicia. Revisa estas tres cosas y ahorras en cada tanqueada. ¿Cuánto te dura un tanque? Coméntalo y síguenos."
+ },
+ "chatterbox-emocion-0.8": {
+  "segundos_generar": 512.0,
+  "naturalidad_utmos": 3.35,
+  "entiende": 1.0,
+  "duracion": 49.9,
+  "palabras_por_seg": 1.58,
+  "pausas": 24,
+  "pausa_media": 0.68,
+  "se_oye": "Tu moto gasta más gasolina de lo normal. Hay tres culpables. Y el tercero, casi nadie lo revisa. Uno, llantas bajas de aire. La moto se arrastra y el motor trabaja de más. Dos, el filtro de aire sucio. El motor se arrastra y el motor trabaja de más. te ahoga y quema más gasolina. 3. La bujía gastada La chispa es débil y parte de la gasolina se desperdicia. Revisa estas tres cosas y ahorras en cada tanqueada. ¿Cuánto te dura un tanque? Más. Coméntalo y síguenos."
+ }
+}
