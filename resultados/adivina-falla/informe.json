@@ -1,12 +1,12 @@
 {
  "edge-jorge-mx": {
-  "segundos_generar": 5.3,
-  "naturalidad_utmos": 3.41,
+  "segundos_generar": 10.9,
+  "naturalidad_utmos": 3.49,
   "entiende": 1.0,
-  "duracion": 26.6,
-  "palabras_por_seg": 2.22,
-  "pausas": 17,
-  "pausa_media": 0.52,
-  "se_oye": "¿Qué falla tiene esta moto? Escucha y elige entre 3. A - Cadena floja B - Balancines desajustados C - Rodamiento de rueda Piénsalo bien 3. 2. 1. Es la B - de Balancines Ese ruido metálico que sube al acelerar es falta de calibración. Pero lo peor, se gasta el árbol de levas. ¿Le atinaste? Comenta tu Letra y escucha otra vez."
+  "duracion": 33.4,
+  "palabras_por_seg": 2.39,
+  "pausas": 21,
+  "pausa_media": 0.5,
+  "se_oye": "¿Qué falla tiene esta moto? Escucha y elige entre 3. A - Cadena floja B - Balancines desajustados C - Rodamiento de rueda Piénsalo bien 3 - 2 - 1 Es la B - de Balancines Mira por dentro La leva mueve el balancín y éste empuja la válvula Si queda mucho espacio, golpea y hace ese ruido Se ajusta con un una galga y una llave. Pero lo peor, si no lo ajustas, se gasta la leva. ¿Le atinaste? Comenta tu letra y escucha otra vez."
  }
 }

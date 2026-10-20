@@ -1,3 +1,3 @@
 | voz | naturalidad (1-5) | entiende | pausas | pausa media | palabras/s | dura |
 |---|---|---|---|---|---|---|
-| edge-jorge-mx | 3.41 | 1.0 | 17 | 0.52 | 2.22 | 26.6 |
+| edge-jorge-mx | 3.49 | 1.0 | 21 | 0.5 | 2.39 | 33.4 |
