@@ -1,0 +1,62 @@
+{
+ "kokoro-alex": {
+  "segundos_generar": 132.8,
+  "naturalidad_utmos": 1.37,
+  "entiende": 0.954,
+  "duracion": 26.6,
+  "palabras_por_seg": 2.44,
+  "pausas": 8,
+  "pausa_media": 0.74,
+  "se_oye": "Tabes que mira un mecánico en los primeros 10 segundos que llegas al taller. No es el motor. Primero la cadena, si cuelga mucho, ya te está robando fuerza. Segundo las llantas, un borde gastado de lata como frenas. Tercero el humo del escape, si sale azul, está quemando aceite. Y lo último, ¿cómo suena en mínimo? Tu moto pasaría la prueba. Es que... Críbenos y la revisamos."
+ },
+ "edge-jorge-mx": {
+  "segundos_generar": 7.6,
+  "naturalidad_utmos": 3.54,
+  "entiende": 0.985,
+  "duracion": 30.2,
+  "palabras_por_seg": 2.15,
+  "pausas": 14,
+  "pausa_media": 0.64,
+  "se_oye": "¿Sabes que mira un mecánico en los primeros 10 segundos que llegas al taller? No es el motor. Primero, la cadena, si cuelga mucho, ya te está robando fuerza. Segundo, las llantas, un borde gastado de lata como frenas. Tercero, el humo del escape, si sale azul, está quemando aceite. Y lo último, como suena en mínimo. Tu moto pasaría la prueba? Escríbenos y la revisamos."
+ },
+ "edge-gonzalo-co": {
+  "segundos_generar": 7.8,
+  "naturalidad_utmos": 3.48,
+  "entiende": 0.954,
+  "duracion": 27.6,
+  "palabras_por_seg": 2.35,
+  "pausas": 14,
+  "pausa_media": 0.65,
+  "se_oye": "Sabes que miró un mecánico en los primeros 10 segundos que llegas al taller. No es el motor. Primero, la cadena, si cuelga mucho, ya te está robando fuerza. Segundo, las llantas, un borde gastado de lata como frenas. Tercero, el humo el escape, si sale azul, está quemando aceite. Y lo último, como suena en mínimo. ¿Tu moto pasaría la prueba? Escríbenos y la revisamos."
+ },
+ "edge-jorge-mx-sin-narrador": {
+  "segundos_generar": 2.0,
+  "naturalidad_utmos": 3.64,
+  "entiende": 0.969,
+  "duracion": 30.0,
+  "palabras_por_seg": 2.17,
+  "pausas": 15,
+  "pausa_media": 0.6,
+  "se_oye": "¿Sabes que mira un mecánico en los primeros 10 segundos que llega al taller? No es el motor. Primero, la cadena, si cuelga mucho, ya te está robando fuerza. Segundo, las llantas, un borde gastado de lata como frenas. Tercero, el humo del escape, si sale azul, está quemando aceite. Y lo último, como suena en mínimo. ¿Tu moto pasaría la prueba? Escríbenos y la revisamos."
+ },
+ "chatterbox-emocion-0.5": {
+  "segundos_generar": 307.5,
+  "naturalidad_utmos": 3.54,
+  "entiende": 0.985,
+  "duracion": 39.5,
+  "palabras_por_seg": 1.65,
+  "pausas": 18,
+  "pausa_media": 0.89,
+  "se_oye": "Sabes que mira un mecánico en los primeros 10 segundos que llegas al taller. No es el motor. Primero, la cadena, si cuelga mucho, ya te está robando fuerza. Segundo, las llantas, un borde gastado de lata, como frenas. Tercero, el humo del escape. Si sale azul, está quemando aceite. y lo último, o cómo suena en mínimo. Tu moto pasaría la prueba. Escríbenos y la revisamos."
+ },
+ "chatterbox-emocion-0.8": {
+  "segundos_generar": 274.0,
+  "naturalidad_utmos": 3.51,
+  "entiende": 0.938,
+  "duracion": 39.4,
+  "palabras_por_seg": 1.65,
+  "pausas": 20,
+  "pausa_media": 0.69,
+  "se_oye": "¿Sabes que mira un mecánico en los primeros 10 segundos que llega al taller? No es en motor. Primero, la cadena, si cuelga mucho, ya te está robando fuerza. Segundo, las llantas, un borde gastado de lata como frenas. Tercero, el humo del escape, si sale azul, está quemando aceite. y lo último, como suena el mínimo. ¿Tu moto pasaría la prueba? Escríbenos y la revisamos."
+ }
+}
