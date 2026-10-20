@@ -115,19 +115,23 @@ def chatterbox(narration: str, ref: Path, out: Path, exaggeration: float = .6):
         chunks.append(cur)
     chunks = narrador.beats(chunks)
     plan = narrador.plan([' '.join(c) for c in chunks])
-    parts = []
-    for pl in plan:
+    parts, words, pos = [], [], 0.0
+    from motocine.text import estimate_words
+    for ch, pl in zip(chunks, plan):
         if pl['pause_before'] and parts:
-            parts.append(np.zeros(int(pl['pause_before'] * SR), np.float32))
+            parts.append(np.zeros(int(pl['pause_before'] * SR), np.float32)); pos += pl['pause_before']
         w = model.generate(pl['say'], language_id='es', audio_prompt_path=str(ref), exaggeration=exaggeration,
                            cfg_weight=.5 if pl['role'] != 'intriga' else .35)
         y = w.squeeze().cpu().numpy().astype(np.float32)
         y = load_resampled(y, model.sr, SR)
         from motocine.voice import _trim
-        parts += [_trim(y, SR), np.zeros(int(pl['pause_after'] * SR), np.float32)]
+        y = _trim(y, SR)
+        words += [[w.text, round(w.start, 3), round(w.end, 3)] for w in estimate_words(ch, pos + .08, pos + len(y) / SR - .12)]
+        parts += [y, np.zeros(int(pl['pause_after'] * SR), np.float32)]
+        pos += len(y) / SR + pl['pause_after']
     x = np.concatenate(parts)
     save_mp3(x, out)
-    return x
+    return x, words
 
 
 def main(project: str, out_dir: str):
@@ -141,12 +145,13 @@ def main(project: str, out_dir: str):
         'edge-gonzalo-co': {'engine': 'edge', 'voice': 'es-CO-GonzaloNeural'},
         'edge-jorge-mx-sin-narrador': {'engine': 'edge', 'voice': 'es-MX-JorgeNeural', 'narrador': False},
     }
-    rep, audio = {}, {}
+    rep, audio, timings = {}, {}, {}
     for name, cfg in variants.items():
         t0 = time.time()
         try:
             v = synthesize(narration, cfg, build / name)
             audio[name] = load(Path(v['audio']))
+            timings[name] = [[w.text, round(w.start, 3), round(w.end, 3)] for w in v['words']]
             rep[name] = {'segundos_generar': round(time.time() - t0, 1)}
         except Exception as e:
             rep[name] = {'error': str(e)[:300]}
@@ -159,13 +164,15 @@ def main(project: str, out_dir: str):
             name = f'chatterbox-emocion-{ex}'
             t0 = time.time()
             try:
-                audio[name] = chatterbox(narration, ref, out / f'{name}.mp3', ex)
+                audio[name], timings[name] = chatterbox(narration, ref, out / f'{name}.mp3', ex)
                 rep[name] = {'segundos_generar': round(time.time() - t0, 1)}
             except Exception as e:
                 traceback.print_exc()
                 rep[name] = {'error': str(e)[:300]}
     for name, x in audio.items():
         save_mp3(x, out / f'{name}.mp3')
+        # tiempos de cada palabra (para usar esta voz en un video: subtítulos y boca del mecánico)
+        (out / f'{name}.json').write_text(json.dumps({'narration': narration, 'words': timings.get(name, [])}, ensure_ascii=False))
         sc, heard = understood(x, narration)
         words = len(narration.split())
         rep[name].update({'naturalidad_utmos': utmos(x), 'entiende': sc, 'duracion': round(len(x) / SR, 1),
