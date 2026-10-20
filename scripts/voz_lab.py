@@ -13,6 +13,7 @@ Calificaciones por voz (informe.md / informe.json):
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import time
@@ -146,6 +147,9 @@ def main(project: str, out_dir: str):
         'edge-jorge-mx-sin-narrador': {'engine': 'edge', 'voice': 'es-MX-JorgeNeural', 'narrador': False},
     }
     rep, audio, timings = {}, {}, {}
+    pick = [v.strip() for v in os.getenv('VOCES', '').split(',') if v.strip()]   # vacío = todas (laboratorio)
+    if pick:
+        variants = {k: v for k, v in variants.items() if k in pick}
     for name, cfg in variants.items():
         t0 = time.time()
         try:
@@ -155,7 +159,7 @@ def main(project: str, out_dir: str):
             rep[name] = {'segundos_generar': round(time.time() - t0, 1)}
         except Exception as e:
             rep[name] = {'error': str(e)[:300]}
-    if 'edge-jorge-mx' in audio:                       # referencia de timbre para Chatterbox (8 s de Jorge)
+    if 'edge-jorge-mx' in audio and (not pick or any(v.startswith('chatterbox') for v in pick)):   # referencia de timbre para Chatterbox (8 s de Jorge)
         ref = build / 'ref.wav'
         x = audio['edge-jorge-mx'][:SR * 9]
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'f32le', '-ar', str(SR), '-ac', '1', '-i', '-', str(ref)],

@@ -5,7 +5,7 @@ name: Laboratorio de voz
 # Repositorio público: los minutos de GitHub Actions son gratis.
 on:
   push:
-    paths: ["guiones/**", "motocine/**", "scripts/**"]
+    paths: ["guiones/**"]
   workflow_dispatch:
     inputs:
       guion:
@@ -41,11 +41,15 @@ jobs:
         id: g
         run: |
           G="${{ inputs.guion }}"
-          if [ -z "$G" ]; then G=$(git diff --name-only HEAD~1 -- guiones | head -1 | xargs -r basename); fi
+          if [ -z "$G" ]; then G=$(git diff --name-only HEAD~1 -- 'guiones/*.txt' | head -1 | xargs -r basename); fi
+          if [ -z "$G" ]; then G=$(git diff --name-only HEAD~1 -- 'guiones/*.voces' | head -1 | xargs -r basename | sed 's/\.voces$/.txt/'); fi
           [ -z "$G" ] && G=gasolina.txt
           echo "guion=$G" >> "$GITHUB_OUTPUT"; echo "nombre=${G%.txt}" >> "$GITHUB_OUTPUT"
       - name: Probar voces
-        run: python scripts/voz_lab.py "guiones/${{ steps.g.outputs.guion }}" "resultados/${{ steps.g.outputs.nombre }}"
+        run: |
+          V="guiones/${{ steps.g.outputs.nombre }}.voces"
+          export VOCES=$( [ -f "$V" ] && tr '\n' ',' < "$V" || echo "" )
+          python scripts/voz_lab.py "guiones/${{ steps.g.outputs.guion }}" "resultados/${{ steps.g.outputs.nombre }}"
       - name: Guardar resultados
         run: |
           git config user.name "motocine-bot"
